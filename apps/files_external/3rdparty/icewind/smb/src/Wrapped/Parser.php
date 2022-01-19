@@ -49,6 +49,7 @@ class Parser {
 		'H' => FileInfo::MODE_HIDDEN,
 		'S' => FileInfo::MODE_SYSTEM,
 		'D' => FileInfo::MODE_DIRECTORY,
+		'DR' => FileInfo::MODE_DIRECTORY,
 		'A' => FileInfo::MODE_ARCHIVE,
 		'N' => FileInfo::MODE_NORMAL
 	];
@@ -178,7 +179,7 @@ class Parser {
 		foreach ($output as $line) {
 			if (preg_match($regex, $line, $matches)) {
 				list(, $name, $mode, $size, $time) = $matches;
-				if ($name !== '.' and $name !== '..') {
+				if ($mode == "DR" or ($name !== '.' and $name !== '..')) {
 					$mode = $this->parseMode($mode);
 					$time = strtotime($time . ' ' . $this->timeZone);
 					$path = $basePath . '/' . $name;

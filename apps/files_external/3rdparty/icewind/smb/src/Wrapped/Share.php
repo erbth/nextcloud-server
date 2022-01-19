@@ -192,25 +192,25 @@ class Share extends AbstractShare {
 	public function stat(string $path): IFileInfo {
 		// some windows server setups don't seem to like the allinfo command
 		// use the dir command instead to get the file info where possible
-		if ($path !== "" && $path !== "/") {
+		// if ($path !== "" && $path !== "/") {
 			$parent = dirname($path);
 			$dir = $this->dir($parent);
 			$file = array_values(array_filter($dir, function (IFileInfo $info) use ($path) {
-				return $info->getPath() === $path;
+				return $info->getPath() === $path || (($path === "" || $path === "/") && $info->getPath() === "//.");
 			}));
 			if ($file) {
 				return $file[0];
 			}
-		}
+		// }
 
 		$escapedPath = $this->escapePath($path);
 		$output = $this->execute('allinfo ' . $escapedPath);
 		// Windows and non Windows Fileserver may respond different
 		// to the allinfo command for directories. If the result is a single
 		// line = error line, redo it with a different allinfo parameter
-		if ($escapedPath == '""' && count($output) < 2) {
-			$output = $this->execute('allinfo ' . '"."');
-		}
+		// if ($escapedPath == '""' && count($output) < 2) {
+		// 	$output = $this->execute('allinfo ' . '"."');
+		// }
 		if (count($output) < 3) {
 			$this->parseOutput($output, $path);
 		}
